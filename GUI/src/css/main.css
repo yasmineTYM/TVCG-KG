@@ -30,15 +30,17 @@ body,
 .vue-flow__node-notif .v-card-item{
   background-color:rgb(160, 160, 222);
 }
-.vue-flow__node-notif {
-  background-color:white;
-  /* border: solid 2px rgb(123, 123, 199); */
-}
-.vue-flow__node-chart {
-  background-color:white;
+.vue-flow__node-cypher .v-card-item{
+  background-color:rgb(218, 154, 204);
 }
 .vue-flow__node-chart .v-card-item{
   background-color:rgb(214, 171, 213);
+}
+.vue-flow__node-table .v-card-item{
+  background-color:rgb(162, 167, 222);
+}
+.vue-flow__node {
+  background-color:white
 }
 /* vue-flow__node 
 .customnodeflow  */

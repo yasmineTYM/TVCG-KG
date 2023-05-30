@@ -20,19 +20,36 @@ const flowStore = defineStore('elementsStore', {
         },
         {
           id: '2',
-          label: 'cypher',
+          type: 'cypher',
           position: { x: 300, y: 10 },
           data: {
-            'cypher': "MATCH"
+            'cypher': "MATCH (a:Author)-[:memberOf]->(aff:Affiliation)\nWHERE aff.name = 'Ohio State University'\nRETURN a.name",
+            "nodeTitle": "Cypher"
           },
           class: 'light',
         },
         {
           id: '3',
-          label: 'Node 2',
+          label: '',
           type: 'table',
-          position: { x: 100, y: 100 },
+          position: { x: 600, y: 10 },
           class: 'light',
+          data:{
+            'nodeTitle': "Retrieved Data",
+            "tableData": {
+              itemsPerPage: 5,
+              headers: [
+                { title: 'Full name', align: 'start', key: 'name' },
+              ],
+              desserts: [
+                {name: 'Yinxuan Shi',},
+                {name: "Subhashis Hazarika"},
+                {name: "Roni Yagel"},
+                {name: "Mukund Raj"},
+                {name: "Bo Yuan"},
+                {name: "Guo-Shi Li"}]
+            }
+          },  
           style: { '--vf-node-color': 'blue' }
         },
         
@@ -40,11 +57,11 @@ const flowStore = defineStore('elementsStore', {
           id: '4',
           label: 'Visualizer',
           type: 'chart',
-          position: { x: 400, y: 200 },
+          position: { x: 1000, y: 10 },
           class: 'light',
         },
         { id: 'e1-2', source: '1', target: '2' },
-        { id: 'e1-3', source: '1', target: '3' },
+        { id: 'e1-3', source: '2', target: '3' },
         { id: 'e3-4', source: '3', target: '4' },
       ],
     };

@@ -64,10 +64,15 @@ function resetTransform() {
 function toggleClass() {
   return (dark.value = !dark.value)
 }
+
+function queryFunc(){
+  alert('tuyamei testing')
+}
+// const  input = "test"
 </script>
 
 <template>
-   <v-card style="width:1350px">
+   <v-card style="width:1700px">
     <v-layout full-height>
       <v-navigation-drawer
         permanent
@@ -91,7 +96,16 @@ function toggleClass() {
         </v-list>
       </v-navigation-drawer>
       <v-main style="height: 900px">
-        <VueFlow v-model="flowData.elements" :class="{ dark }" class="basicflow" :default-zoom="0.1" :min-zoom="0.2" :max-zoom="4">
+        <v-row style="margin-top:15px; width:100%">
+          <v-col style="width:80%">
+            <v-text-field @validate ="test" label="Input your question to Knowledge Graph" clearable variant="solo-inverted" style="width:100%;float:right;"></v-text-field>
+          </v-col>
+          <v-col style="width:20%">
+            <v-btn style="float: left" size="x-large" @click="queryFunc">Query</v-btn>
+          </v-col>
+        </v-row>
+        <!-- <v-row> -->
+          <VueFlow v-model="flowData.elements" :class="{ dark }" class="basicflow" :default-zoom="0.1" :min-zoom="0.2" :max-zoom="4">
           <!-- <VueFlow v-model="flowData.elements" :class="{ dark }" class="basicflow" :default-zoom="0.1" :min-zoom="0.2" :max-zoom="4" :node-types="nodeTypes"> -->
           <template #node-chart="props">
             <ChartNode v-bind="props" />
@@ -103,10 +117,10 @@ function toggleClass() {
             <NotifNode :data="data" :id="id"/>
           </template>
           <template #node-cypher="{data, id}">
-            <CypheerNode :data="data" :id="id"/>
+            <CypherNode :data="data" :id="id"/>
           </template>
           
-          <Background :pattern-color="dark ? '#FFFFFB' : '#aaa'" gap="8" />
+          <Background :pattern-color="dark ? '#FFFFFB' : '#aaa'" gap="8" bgColor="#fff"/>
           <MiniMap />
           <Controls />
           <Panel :position="PanelPosition.TopRight" class="controls">
@@ -158,6 +172,8 @@ function toggleClass() {
             </button>
           </Panel>
         </VueFlow>
+        <!-- </v-row> -->
+        
       </v-main>
     </v-layout>
     

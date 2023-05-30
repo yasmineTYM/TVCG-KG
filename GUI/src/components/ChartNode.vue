@@ -6,8 +6,14 @@ import {ref,onMounted, onUnmounted,watch, onActivated} from 'vue'
 // Vue.use(VueVega)
 import { createApp } from 'vue'
 import App from '../App.vue'
+import { NodeResizer } from '@vue-flow/node-resizer'
+import { Handle, Position } from '@vue-flow/core'
+import {initialize} from '../js/initialize.js'
+
 const app = createApp(App)
 app.use(VueVega)
+
+const {cardWidth, cardHeight, resizeEndFunc} = initialize(400, 300)
 
 const data = ref({
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
@@ -38,9 +44,12 @@ function draw(){
 
 <template>
     <div>
+      <NodeResizer @resize="resizeEndFunc" min-width="100" min-height="30"  color="white"/>
+      <Handle type="target" :position="Position.Left" />
+      <Handle type="source" :position="Position.Right" />
       <v-card
-      width="400"
-      height="300"
+      :width=cardWidth
+      :height=cardHeight
       variant = "outlined"
       title="Visualizer">
       <div id="vegaDiv">
