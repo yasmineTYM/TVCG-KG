@@ -5,12 +5,36 @@ import { Background } from '@vue-flow/background'
 import { Controls } from '@vue-flow/controls'
 import { MiniMap } from '@vue-flow/minimap'
 
-import flowStore from '../stores/flow.js';
-
 import TableNode from './TableNode.vue'
 import ChartNode from './ChartNode.vue'
 import NotifNode from './NotifNode.vue'
 import CypherNode from './CypherNode.vue'
+import SchemaNode from './SchemaNode.vue'
+
+import {useNotifStore} from '@/stores/nodeNotif'
+import {useSchemaStore} from '@/stores/nodeSchema'
+import {useTableStore} from '@/stores/nodeTable'
+import {useChartStore} from '@/stores/nodeChart'
+import {useCypherStore} from '@/stores/nodeCypher'
+import {neoInit, neoQuery} from '../js/neo4j.js'
+import {node_properties_query, rel_properties_query, rel_query} from '../js/cypher.js'
+// import {openaiPromptCypher} from '../js/openai.js'
+
+
+const schemaStore = useSchemaStore()
+const notifStore = useNotifStore()
+const tableStore = useTableStore()
+const chartStore = useChartStore()
+const cypherStore = useCypherStore()
+
+const question = ref(''); // user input 
+const elements = reactive([]); // nodes/links elements 
+const global_id  = ref(1); //global id for 
+const loader_show = ref(false);
+
+const global_x = ref(0);
+const global_y = ref(0);
+const interval = ref(50);
 
 const items = ref([
   { title: 'Home', icon: 'mdi-home-city' },
@@ -18,22 +42,81 @@ const items = ref([
   { title: 'Users', icon: 'mdi-account-group-outline' },
 ])
 
-const flowData = flowStore();
 
-const { onPaneReady, onNodeDragStop, onConnect, addEdges, setTransform, toObject } = useVueFlow()
+function addOneNode(node){
+  elements.push(node)
+  global_id.value+=1 
+}
 
 
-// const nodeTypes = {
-//   table: markRaw(TableNode),
-//   chart: markRaw(ChartNode),
-//   notif: markRaw(NotifNode)
-// }
+import { Configuration, OpenAIApi }  from 'openai'
+import { OpenAI } from "langchain/llms/openai";
+import { PromptTemplate } from "langchain/prompts";
+import { LLMChain } from "langchain/chains";
+
+const template = "What is a good name for a company that makes {product}?";
+const promptA = new PromptTemplate({ template, inputVariables: ["product"] });
+
+// We can use the `format` method to format the template with the given input values.
+const responseA = await promptA.format({ product: "colorful socks" });
+console.log({ responseA });
+
+
+// console.log(response)
+// queryFunc()
+async function queryFunc(){
+  const session = neoInit()
+  const node_properties = await neoQuery(session, node_properties_query)
+  const relationships_properties = await neoQuery(session, rel_properties_query)
+  const relationships = await neoQuery(session, rel_query)
+  const schema = ref("")
+  schema.value += "Node properties are the following\n"
+  node_properties.forEach((item) => {
+    schema.value += item['_fields'].toString()+"\n"
+  });
+  schema.value += "Relationship properties are the following:\n"
+  relationships_properties.forEach((item)=>{
+    schema.value += item['_fields'].toString()+"\n"
+  })
+  schema.value += "The relationships are the following:"
+  relationships.forEach((item)=>{
+    schema.value += item +" "
+  })
+  
+  console.log(schema.value)
+  const schema_node = schemaStore.initialize(global_id.value, 'KG schema', 100, 20, 'KG Schema', node_properties, relationships_properties, relationships, 300,400)
+  addOneNode(schema_node)
+ 
+  const notif_node = notifStore.initialize(global_id.value,'question', 500, 20, 'Question answering:', question, 250, 200)
+  addOneNode(notif_node)
+
+  // const openai = openaiInit(question)
+
+  const notif_node2 = notifStore.initialize(global_id.value,'question-ff', 1000, 20, 'Question :',question,250, 200)
+  addOneNode(notif_node2)
+
+  console.log(elements)
+  // connect neo4j 
+  // const neo4j = require('neo4j-driver')
+  
+  loader_show.value = true
+
+  
+  // console.log(node_properties['records'])
+  loader_show.value = false
+  
+  // await session.close()
+ 
+
+}
+const { onPaneReady, onNodeDragStop, onConnect, addEdges, setTransform, toObject} = useVueFlow()
 
 /**
  * This is a Vue Flow event-hook which can be listened to from anywhere you call the composable, instead of only on the main component
  *
  * onPaneReady is called when viewpane & nodes have visible dimensions
  */
+
 onPaneReady(({ fitView }) => {
   fitView()
 })
@@ -65,9 +148,10 @@ function toggleClass() {
   return (dark.value = !dark.value)
 }
 
-function queryFunc(){
-  alert('tuyamei testing')
-}
+
+
+
+
 // const  input = "test"
 </script>
 
@@ -90,25 +174,41 @@ function queryFunc(){
         <v-divider></v-divider>
 
         <v-list density="compact" nav>
-          <v-list-item prepend-icon="mdi-home-city" title="Home" value="home"></v-list-item>
-          <v-list-item prepend-icon="mdi-account" title="My Account" value="account"></v-list-item>
-          <v-list-item prepend-icon="mdi-account-group-outline" title="Users" value="users"></v-list-item>
+          <!-- <v-list-item>
+            <div class="vue-flow__node-input" :draggable="true" @dragstart="onDragStart($event, 'input')">Input Node</div>
+          </v-list-item>
+          <v-list-item>
+            <div class="vue-flow__node-default" :draggable="true" @dragstart="onDragStart($event, 'default')">Default Node</div>
+          </v-list-item>
+          <v-list-item>
+            <div class="vue-flow__node-output" :draggable="true" @dragstart="onDragStart($event, 'output')">Output Node</div>
+          </v-list-item> -->
         </v-list>
       </v-navigation-drawer>
       <v-main style="height: 900px">
         <v-row style="margin-top:15px; width:100%">
           <v-col style="width:80%">
-            <v-text-field @validate ="test" label="Input your question to Knowledge Graph" clearable variant="solo-inverted" style="width:100%;float:right;"></v-text-field>
+            <v-text-field label="Input your question to Knowledge Graph" loading clearable variant="solo-inverted" style="width:100%;float:right;" v-model="question">
+              <template v-slot:loader>
+                <v-progress-linear
+                  :active="loader_show"
+                  color="#bebada"
+                  absolute
+                  height="7"
+                  indeterminate
+                ></v-progress-linear>
+              </template>
+            </v-text-field>
           </v-col>
           <v-col style="width:20%">
             <v-btn style="float: left" size="x-large" @click="queryFunc">Query</v-btn>
           </v-col>
         </v-row>
         <!-- <v-row> -->
-          <VueFlow v-model="flowData.elements" :class="{ dark }" class="basicflow" :default-zoom="0.1" :min-zoom="0.2" :max-zoom="4">
-          <!-- <VueFlow v-model="flowData.elements" :class="{ dark }" class="basicflow" :default-zoom="0.1" :min-zoom="0.2" :max-zoom="4" :node-types="nodeTypes"> -->
-          <template #node-chart="props">
-            <ChartNode v-bind="props" />
+          <VueFlow v-model="elements" :class="{ dark }" class="basicflow" :default-zoom="0.6"> 
+          <!-- <VueFlow v-model="flowData.elements" :class="{ dark }" class="basicflow"  :default-viewport="{ zoom: 0.5 } :min-zoom="0.2" :max-zoom="4" :node-types="nodeTypes"> -->
+          <template #node-chart="{data, id}">
+            <ChartNode :data="data" :id="id" />
           </template>
           <template #node-table="props">
             <TableNode v-bind="props" />
@@ -118,6 +218,9 @@ function queryFunc(){
           </template>
           <template #node-cypher="{data, id}">
             <CypherNode :data="data" :id="id"/>
+          </template>
+          <template #node-schema="props">
+            <SchemaNode :data="props.data" :id="props.id" :position="props.position"/>
           </template>
           
           <Background :pattern-color="dark ? '#FFFFFB' : '#aaa'" gap="8" bgColor="#fff"/>
@@ -178,7 +281,6 @@ function queryFunc(){
     </v-layout>
     
   </v-card>
-  
 </template>
 
 <style>

@@ -39,6 +39,9 @@ body,
 .vue-flow__node-table .v-card-item{
   background-color:rgb(162, 167, 222);
 }
+.vue-flow__node-schema .v-card-item{
+  background-color:rgb(138, 193, 168);
+}
 .vue-flow__node {
   background-color:white
 }

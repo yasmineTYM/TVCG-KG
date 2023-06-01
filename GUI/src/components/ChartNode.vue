@@ -15,31 +15,19 @@ app.use(VueVega)
 
 const {cardWidth, cardHeight, resizeEndFunc} = initialize(400, 300)
 
-const data = ref({
-  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-  "description": "A simple donut chart with embedded data.",
-  "data": {
-    "values": [
-      {"category": 1, "value": 4},
-      {"category": 2, "value": 6},
-      {"category": 3, "value": 10},
-      {"category": 4, "value": 3},
-      {"category": 5, "value": 7},
-      {"category": 6, "value": 8}
-    ]
+const props = defineProps({
+  data: {
+    type:Object,
+    required: true
   },
-  "mark": {"type": "arc", "innerRadius": 50},
-  "encoding": {
-    "theta": {"field": "value", "type": "quantitative"},
-    "color": {"field": "category", "type": "nominal"}
+  id: {
+    type:String, 
+    required: true
   }
 })
-draw()
+// const data = ref()
+vegaEmbed('#vegaDiv', props.data)
 
-
-function draw(){
-    vegaEmbed('#vegaDiv', data.value)
-}
 </script>
 
 <template>

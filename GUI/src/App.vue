@@ -15,7 +15,8 @@ import Main from './components/Main.vue'
   <main>
     <TheWelcome />
   </main> -->
-  <Main />
+<Suspense> <Main /></Suspense>
+ 
 </template>
 
 <style scoped>
