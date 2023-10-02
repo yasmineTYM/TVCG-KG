@@ -12,8 +12,13 @@ In this GitHub repository, you will find the tools, resources, and documentation
 Get started today and embark on your journey to more efficient and informed decision-making with TVCG-KG! Feel free to contribute, ask questions, and be part of this exciting initiative.
 
 ## Online Demo for the usage scenarios
-[Visit online demos in our paper](https://observablehq.com/d/53ebb00b451f79a6)
+[Explore TVCG-KG through Online Demos, Open in Observable](https://observablehq.com/d/53ebb00b451f79a6)
+
+This link will take you to a collection of online demonstrations showcasing TVCG-KG. These demos provide practical examples of how to connect to TVCG-KG using JavaScript and generate insightful visualizations.
+
 ![Author-driven Analysis using TVCG-KG](figures/demo.png)
+
+
 ## Access to the TVCG-KG through Neo4j - (Cloud)
 ### Javascript 
 ```javascript
