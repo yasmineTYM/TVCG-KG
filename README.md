@@ -86,7 +86,7 @@ MATCH (paper:Paper)-[keyword]->(resource:Resource)
 RETURN author.name AS authors, COLLECT(paper.title) AS paperTitles, COLLECT(paper.publicationDate) AS publicationDates, COLLECT(keyword) AS keywords
 LIMIT 25
 ```
-![image of query results](image007.png) 
+![image of query results](figures/image007.png) 
 > [!NOTE]
 > **LIMIT 25** returns 25 entries and can be removed or changed as needed depending on query needs
 
